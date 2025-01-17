@@ -36,15 +36,30 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   // Any state variable will go here
   final String userName = "Iron Man";
+  final TextEditingController _controller = TextEditingController();
+  final FocusNode _focusNode = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Add a listener to the controller to rebuild the UI when text changes
+    _controller.addListener(() {
+      print("data: ${_controller.text}\n");
+      setState(() {});
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    //updating the status bar color
     SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle(
         statusBarColor: Color(0xFF3A5A97), // Set your desired color
         statusBarIconBrightness: Brightness.light, // Adjust icon brightness
       ),
     );
+
     return Scaffold(
       body: SafeArea(
         child: Center(
@@ -130,12 +145,74 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               SizedBox(height: 16),
               // Wrap DynamicListExample with an Expanded widget to fix overflow issue
-              Expanded(child: DynamicListExample())
+              Expanded(child: DynamicListExample()),
+              Padding(
+                padding: const EdgeInsets.all(6.0),
+                child: Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      // Wrap EditableText with Flexible to avoid overflow
+                      Flexible(
+                        child: Stack(
+                          children: [
+                            // Placeholder Text
+                            if (_controller.text.isEmpty) // Show only when no text
+                              Text(
+                                "Enter text here...", // Placeholder text
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            EditableText(
+                              controller: _controller,
+                              focusNode: _focusNode,
+                              style: const TextStyle(
+                                fontSize: 18,
+                                color: Colors.black,
+                              ),
+                              cursorColor: Colors.blue, // Cursor color
+                              backgroundCursorColor: Colors.grey, // Background cursor color
+                              keyboardType: TextInputType.text, // Type of keyboard
+                              autofocus: true, // Automatically focus when displayed
+                              maxLines: 1, // Number of lines for text (set null for unlimited)
+                              selectionControls: materialTextSelectionControls, // Default text selection controls
+                            ),
+                          ],
+                        ),
+                      ),
+                      // Add some spacing between the EditableText and the IconButton
+                      SizedBox(width: 10),
+                      IconButton(
+                          iconData: Icons.mic,
+                          size: 30,
+                          onTap: () {}
+                      ),
+                      SizedBox(width: 20),
+                      IconButton(
+                          iconData: Icons.telegram,
+                          size: 30,
+                          onTap: () {}
+                      )
+                    ],
+                  ),
+                ),
+              ),
+              SizedBox(height: 4)
             ],
           ),
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    _focusNode.dispose();
+    super.dispose();
   }
 }
 
@@ -179,7 +256,6 @@ class DataItem {
     this.type, // Initialize size
   );
 }
-
 class _DynamicListExampleState extends State<DynamicListExample> {
   // Mutable list of items
 
@@ -213,7 +289,7 @@ class _DynamicListExampleState extends State<DynamicListExample> {
                   }, // Use the callback when the icon is clicked
                   child:Text(
                     items[index].value,
-                    style: TextStyle(fontSize: 18),
+                    style: TextStyle(fontSize: 18, color: Colors.white),
                   ),
               ),
             )
