@@ -39,6 +39,20 @@ class _MyHomePageState extends State<MyHomePage> {
   final TextEditingController _controller = TextEditingController();
   final FocusNode _focusNode = FocusNode();
 
+  List<DataItem> items = [
+    DataItem("Hi, How are you", 1),
+    DataItem("Hi, How are you", 2),
+    DataItem("Hi, How are you", 1),
+    DataItem("Hi, How are you", 1),
+  ];
+
+  void addItem(String data, int type) {
+    setState(() {
+      items.add(DataItem(data, type));
+    });
+    print(items.length);
+  }
+
   @override
   void initState() {
     super.initState();
@@ -145,7 +159,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               SizedBox(height: 16),
               // Wrap DynamicListExample with an Expanded widget to fix overflow issue
-              Expanded(child: DynamicListExample()),
+              Expanded(child: DynamicListExample(items)),
               Padding(
                 padding: const EdgeInsets.all(6.0),
                 child: Align(
@@ -194,7 +208,14 @@ class _MyHomePageState extends State<MyHomePage> {
                       IconButton(
                           iconData: Icons.telegram,
                           size: 30,
-                          onTap: () {}
+                          onTap: () {
+                            print("Input text: "+_controller.text);
+                            if(_controller.text.isNotEmpty == true) {
+                              addItem(_controller.text, 2);
+                            } else {
+                              addItem("I'm, good! how can i help you?", 1);
+                            }
+                          }
                       )
                     ],
                   ),
@@ -242,10 +263,12 @@ class IconButton extends StatelessWidget {
 }
 
 class DynamicListExample extends StatefulWidget {
-  const DynamicListExample({super.key});
+  List<DataItem> items;
+
+  DynamicListExample(this.items, {super.key});
 
   @override
-  _DynamicListExampleState createState() => _DynamicListExampleState();
+  _DynamicListExampleState createState() => _DynamicListExampleState(items);
 }
 class DataItem {
   final String value;
@@ -259,19 +282,23 @@ class DataItem {
 class _DynamicListExampleState extends State<DynamicListExample> {
   // Mutable list of items
 
-  List<DataItem> items = [
-    DataItem("Hi, How are you", 1),
-    DataItem("Hi, How are you", 2),
-    DataItem("Hi, How are you", 1),
-    DataItem("Hi, How are you", 1),
-  ];
+  late List<DataItem> items;
+
+  // = [
+  //   DataItem("Hi, How are you", 1),
+  //   DataItem("Hi, How are you", 2),
+  //   DataItem("Hi, How are you", 1),
+  //   DataItem("Hi, How are you", 1),
+  // ];
+
+  _DynamicListExampleState(this.items);
 
   // Method to add a new item to the list
-  void addItem(int type) {
-    setState(() {
-      items.add(DataItem("New Item", type));
-    });
-  }
+  // void addItem(int type) {
+  //   setState(() {
+  //     items.add(DataItem("New Item", type));
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -285,7 +312,7 @@ class _DynamicListExampleState extends State<DynamicListExample> {
               color: Color(0xFF3A5A97),
                 child: GestureDetector(
                   onTap: () {
-                    addItem(1);
+                    // addItem(1);
                   }, // Use the callback when the icon is clicked
                   child:Text(
                     items[index].value,
@@ -301,7 +328,7 @@ class _DynamicListExampleState extends State<DynamicListExample> {
               color: Color(0xFFBAC0CB),
               child: GestureDetector(
                   onTap: () {
-                    addItem(2);
+                    // addItem(2);
                   }, // Use the callback when the icon is clicked
                   child:Text(
                     items[index].value,
